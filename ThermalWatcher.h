@@ -43,46 +43,46 @@ using WatcherCallback = std::function<bool(const std::set<std::string> &name)>;
 // A helper class for monitoring thermal files changes.
 class ThermalWatcher : public ::android::Thread {
   public:
-	ThermalWatcher(const WatcherCallback &cb)
-		: Thread(false), cb_(cb), looper_(new Looper(true)) {}
-	~ThermalWatcher() = default;
+    ThermalWatcher(const WatcherCallback &cb)
+        : Thread(false), cb_(cb), looper_(new Looper(true)) {}
+    ~ThermalWatcher() = default;
 
-	// Disallow copy and assign.
-	ThermalWatcher(const ThermalWatcher &) = delete;
-	void operator=(const ThermalWatcher &) = delete;
+    // Disallow copy and assign.
+    ThermalWatcher(const ThermalWatcher &) = delete;
+    void operator=(const ThermalWatcher &) = delete;
 
-	// Start the thread and return true if it succeeds.
-	bool startThermalWatcher();
-	// init uevent socket
-	void initThermalWatcher();
-	// Wake up the looper thus the worker thread, immediately. This can be called
-	// in any thread.
-	void wake();
+    // Start the thread and return true if it succeeds.
+    bool startThermalWatcher();
+    // init uevent socket
+    void initThermalWatcher();
+    // Wake up the looper thus the worker thread, immediately. This can be called
+    // in any thread.
+    void wake();
 
   private:
-	// The work done by the watcher thread. This will use inotify to check for
-	// modifications to the files to watch. If any modification is seen this
-	// will callback the registered function with the new data read from the
-	// modified file.
-	bool threadLoop() override;
+    // The work done by the watcher thread. This will use inotify to check for
+    // modifications to the files to watch. If any modification is seen this
+    // will callback the registered function with the new data read from the
+    // modified file.
+    bool threadLoop() override;
 
-	// Parse uevent message
-	void parseUevent(std::set<std::string> *sensor_name);
+    // Parse uevent message
+    void parseUevent(std::set<std::string> *sensor_name);
 
-	// The callback function. Called whenever thermal uevent is seen.
-	// The function passed in should expect a string in the form (type).
-	// Where type is the name of the thermal zone that trigger a uevent notification.
-	// Callback will return thermal trigger status for next polling decision.
-	const WatcherCallback cb_;
+    // The callback function. Called whenever thermal uevent is seen.
+    // The function passed in should expect a string in the form (type).
+    // Where type is the name of the thermal zone that trigger a uevent notification.
+    // Callback will return thermal trigger status for next polling decision.
+    const WatcherCallback cb_;
 
-	sp<Looper> looper_;
+    sp<Looper> looper_;
 
-	// For uevent socket registration.
-	android::base::unique_fd uevent_fd_;
-	// Flag to point out if any sensor across the first threshold.
-	bool thermal_triggered_;
-	// Flag to point out if device can support uevent notify.
-	bool is_polling_;
+    // For uevent socket registration.
+    android::base::unique_fd uevent_fd_;
+    // Flag to point out if any sensor across the first threshold.
+    bool thermal_triggered_;
+    // Flag to point out if device can support uevent notify.
+    bool is_polling_;
 };
 
 }  // namespace implementation
