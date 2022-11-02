@@ -441,7 +441,8 @@ bool ThermalImpl::init_cl_path() {
             CoolingDevice_2_0 coolingdevice;
             read_len = read(fd, buf, CDNAME_SZ);
             for (int j = 0; j < MAX_COOLING; ++j) {
-                if (std::strncmp(buf, cdata[j].cl_2_0.name.c_str(), std::strlen(cdata[j].cl_2_0.name.c_str())) == 0) {
+                size_t cl_name_len = std::strlen(cdata[j].cl_2_0.name.c_str());
+                if ((cl_name_len > 0) && std::strncmp(buf, cdata[j].cl_2_0.name.c_str(), cl_name_len) == 0) {
                     cdata[j].cl_idx = i;
                     snprintf(temp_value_path, CDPATH_LENGTH, CDPATH_PREFIX"%d/cur_state", i);
                     fd_value = open(temp_value_path, O_RDONLY);
@@ -460,7 +461,6 @@ bool ThermalImpl::init_cl_path() {
                     close(fd_value);
                 }
             }
-
         }
         i++;
         close(fd);
